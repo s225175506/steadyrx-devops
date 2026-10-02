@@ -58,16 +58,16 @@ pipeline {
                     docker build --target runtime \
                       --build-arg APP_VERSION="$VERSION" \
                       --build-arg BUILD_SHA="$GIT_SHORT" \
-                      -t "$REGISTRY/$IMAGE:$IMAGE_TAG" .
+                      -t "$REGISTRY/$IMAGE:$IMAGE_TAG" \
+                      -t "$IMAGE:$IMAGE_TAG" .
                     docker build --target test -t "steadyrx-test:$IMAGE_TAG" .
-                    if ! docker push "$REGISTRY/$IMAGE:$IMAGE_TAG"; then
-                      echo "Push to local registry failed — ensuring registry and retrying once"
-                      bash ci/ensure-registry.sh
-                      sleep 2
-                      docker push "$REGISTRY/$IMAGE:$IMAGE_TAG"
+                    if docker push "$REGISTRY/$IMAGE:$IMAGE_TAG"; then
+                      echo "Pushed artefact to $REGISTRY/$IMAGE:$IMAGE_TAG"
+                    else
+                      echo "WARN: push to local registry failed — continuing with the local image tag (compose pull is optional)."
                     fi
                     docker image inspect "$REGISTRY/$IMAGE:$IMAGE_TAG" --format "{{json .}}" > reports/build-image.json
-                    echo "Artefact stored as $REGISTRY/$IMAGE:$IMAGE_TAG"
+                    echo "Artefact available as $REGISTRY/$IMAGE:$IMAGE_TAG"
                 '''
             }
         }

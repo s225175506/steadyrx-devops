@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # Prepares Docker for the Mac Jenkins agent (Colima).
 set -euo pipefail
-# shellcheck source=common.sh
-source "$(dirname "$0")/common.sh"
 
 export DOCKER_HOST="${DOCKER_HOST:-unix://${HOME}/.colima/default/docker.sock}"
 
@@ -11,11 +9,10 @@ if ! command -v docker >/dev/null 2>&1; then
   exit 1
 fi
 
-# Ensure Colima is up when available (with local insecure registry for artefacts)
 if command -v colima >/dev/null 2>&1; then
   if ! colima status 2>/dev/null | grep -qi 'running'; then
     echo "Starting Colima..."
-    colima start --cpu 2 --memory 4 --insecure-registry localhost:5000 || colima start --cpu 2 --memory 4 || true
+    colima start --cpu 2 --memory 4 || true
   fi
   docker context use colima >/dev/null 2>&1 || true
 fi
