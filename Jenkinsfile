@@ -21,7 +21,8 @@ pipeline {
         REGISTRY        = 'localhost:5000'
         IMAGE           = 'steadyrx-api'
         VERSION_PREFIX  = '1.0'
-        DOCKER_BUILDKIT = '1'
+        // Colima often ships without the buildx plugin; classic builder is enough for --target.
+        DOCKER_BUILDKIT = '0'
         // Colima Docker socket on this Mac Jenkins agent
         DOCKER_HOST     = "unix://${HOME}/.colima/default/docker.sock"
         PATH            = "/opt/homebrew/bin:/usr/local/bin:${env.PATH}"

@@ -17,8 +17,8 @@ if command -v colima >/dev/null 2>&1; then
   docker context use colima >/dev/null 2>&1 || true
 fi
 
-# Compose plugin path (Homebrew)
-mkdir -p "${HOME}/.docker"
+# Compose / buildx plugin path (Homebrew). Prefer classic builder if buildx is absent.
+mkdir -p "${HOME}/.docker/cli-plugins"
 python3 - <<'PY'
 import json
 from pathlib import Path
@@ -31,6 +31,21 @@ if want not in dirs:
 cfg["cliPluginsExtraDirs"] = dirs
 p.write_text(json.dumps(cfg, indent=2) + "\n")
 PY
+
+# Symlink Homebrew compose/buildx plugins into ~/.docker/cli-plugins when present
+for plugin in docker-compose docker-buildx; do
+  src="/opt/homebrew/lib/docker/cli-plugins/${plugin}"
+  dst="${HOME}/.docker/cli-plugins/${plugin}"
+  if [[ -x "$src" && ! -e "$dst" ]]; then
+    ln -sf "$src" "$dst"
+  fi
+done
+
+# Avoid BuildKit when buildx is missing (Colima default)
+if ! docker buildx version >/dev/null 2>&1; then
+  export DOCKER_BUILDKIT=0
+  echo "buildx not found — using classic builder (DOCKER_BUILDKIT=0)"
+fi
 
 ready=false
 for i in $(seq 1 20); do
