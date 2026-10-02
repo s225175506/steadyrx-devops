@@ -9,6 +9,10 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PIP_NO_CACHE_DIR=1 \
     PIP_DISABLE_PIP_VERSION_CHECK=1
 WORKDIR /app
+# Patch OS packages so Trivy does not fail the gate on Debian CVEs (e.g. libpcre2).
+RUN apt-get update \
+    && apt-get upgrade -y --no-install-recommends \
+    && rm -rf /var/lib/apt/lists/*
 # Upgrade pip first so the image does not ship a pip release with known CVEs.
 RUN python -m pip install --upgrade pip
 COPY requirements.txt .
