@@ -122,17 +122,17 @@ pipeline {
                         echo 'Trivy scans the runtime image for HIGH/CRITICAL vulns.'
                         sh '''
                           set -e
-                          SOCK="${DOCKER_HOST#unix://}"
-                          SOCK="${SOCK:-$HOME/.colima/default/docker.sock}"
+                          # Containers run inside the Colima VM, so mount the guest
+                          # docker.sock — not the host path under ~/.colima/...
                           docker run --rm \
-                            -v "$SOCK:/var/run/docker.sock" \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
                             -v steadyrx-trivy-cache:/root/.cache \
                             -v "$PWD/reports:/reports" \
                             aquasec/trivy:0.69.3 image --scanners vuln \
                             --format json --output /reports/trivy-image.json \
                             "$REGISTRY/$IMAGE:$IMAGE_TAG" || true
                           docker run --rm \
-                            -v "$SOCK:/var/run/docker.sock" \
+                            -v /var/run/docker.sock:/var/run/docker.sock \
                             -v steadyrx-trivy-cache:/root/.cache \
                             aquasec/trivy:0.69.3 image --scanners vuln \
                             --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
