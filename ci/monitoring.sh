@@ -10,7 +10,8 @@ docker compose -p steadyrx-monitoring -f "$COMPOSE" up -d --build --remove-orpha
 
 wait_http Prometheus 'http://127.0.0.1:9090/-/ready'
 wait_http Alertmanager 'http://127.0.0.1:9093/-/ready'
-wait_http Grafana 'http://127.0.0.1:3000/api/health'
+# Grafana 12 may download bundled plugins on first boot (can exceed 60s).
+wait_http Grafana 'http://127.0.0.1:3000/api/health' 120
 wait_http 'Alert receiver' 'http://127.0.0.1:9095/health'
 
 curl -sf -X POST 'http://127.0.0.1:9090/-/reload' >/dev/null || true
