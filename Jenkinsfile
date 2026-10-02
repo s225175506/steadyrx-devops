@@ -151,12 +151,14 @@ pipeline {
                             -v steadyrx-trivy-cache:/root/.cache \
                             -v "$PWD:/src" \
                             aquasec/trivy:0.69.3 fs --scanners secret,misconfig \
+                            --timeout 15m \
                             --skip-dirs /src/reports \
                             --format json --output /src/reports/trivy-repo.json /src || true
                           docker run --rm \
                             -v steadyrx-trivy-cache:/root/.cache \
                             -v "$PWD:/src" \
                             aquasec/trivy:0.69.3 fs --scanners secret,misconfig \
+                            --timeout 15m \
                             --skip-dirs /src/reports \
                             --severity HIGH,CRITICAL --exit-code 1 /src
                         '''
