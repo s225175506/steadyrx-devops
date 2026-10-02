@@ -129,12 +129,14 @@ pipeline {
                             -v steadyrx-trivy-cache:/root/.cache \
                             -v "$PWD/reports:/reports" \
                             aquasec/trivy:0.69.3 image --scanners vuln \
+                            --timeout 15m \
                             --format json --output /reports/trivy-image.json \
                             "$REGISTRY/$IMAGE:$IMAGE_TAG" || true
                           docker run --rm \
                             -v /var/run/docker.sock:/var/run/docker.sock \
                             -v steadyrx-trivy-cache:/root/.cache \
                             aquasec/trivy:0.69.3 image --scanners vuln \
+                            --timeout 15m \
                             --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 \
                             "$REGISTRY/$IMAGE:$IMAGE_TAG"
                         '''
