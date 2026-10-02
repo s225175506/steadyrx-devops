@@ -39,5 +39,5 @@ Trivy is pinned to 0.69.3 on purpose. Versions 0.69.4 to 0.69.6 of the Trivy ima
 ## Clean results
 
 * Bandit found no issues at any severity in the application code. The alert receiver binds to `0.0.0.0` inside its container, which is expected, and is marked `# nosec B104` with that reason.
-* pip-audit found no known vulnerabilities in FastAPI 0.141.1, Uvicorn 0.53.0, Pydantic 2.13.5, PyJWT 2.14.0 or prometheus-client 0.26.0.
+* pip-audit found no known vulnerabilities in FastAPI 0.141.1, Uvicorn 0.53.0, Pydantic 2.13.5, PyJWT 2.15.0 or prometheus-client 0.26.0.
 * Trivy found no committed secrets. The JWT signing keys are generated per environment by `ci/deploy.ps1` and kept outside the repository.
